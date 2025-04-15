@@ -37,13 +37,13 @@ function ProductCard({ cards }) {
         return window.alert("order is not created");
       }
       const options = {
-        key: `${process.env.NEXT_PUBLIC_RAZORPAY_TEST_KEY_ID}`,
-        amount: `${data.amount}`,
-        currency: `${data.currency}`,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_TEST_KEY_ID,
+        amount: data.amount,
+        currency: data.currency,
         name: card.name,
         description: "Test Transaction",
         image: card.image,
-        order_id: `${data.id}`,
+        order_id: data.id,
         handler: function (response) {
           window.alert("Payment Sucessfull");
           router.refresh();
