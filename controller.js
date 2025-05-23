@@ -1,16 +1,15 @@
+const Product = require("./model/productModel");
+const Payment = require("./model/paymentModel");
+const short = require("short-uuid");
+const { razorpay } = require("./util/razorpay-credentials");
 const {
   validateWebhookSignature,
 } = require("razorpay/dist/utils/razorpay-utils");
 
-const Product = require("./model/productModel");
-const Payment = require("./model/paymentModel");
-const { razorpay } = require("./util/razorpay-credential");
-const short = require("short-uuid");
-
 exports.getProduct = async (_, res) => {
   try {
     const product = await Product.find();
-   
+
     if (!product) {
       return res.status(400).json({
         status: "error",
@@ -38,12 +37,6 @@ exports.addProduct = async (req, res) => {
 
 exports.buyProduct = async (req, res) => {
   try {
-    // if(!user){
-    //   error()
-    // }
-    // if(!product){
-    //   error()
-    // }
     const receipt = short().new();
 
     const options = {
@@ -72,10 +65,9 @@ exports.webhook = async (req, res) => {
       webhookSecret
     )
   ) {
-    console.error("Validation Error");
+    console.error("Validation error");
     return res.status(400);
   }
-
   const payment = await Payment.find({ webhookEventId });
   if (payment.webhookEventId === webhookEventId) {
     console.error("duplicate webhook");
@@ -89,14 +81,12 @@ exports.webhook = async (req, res) => {
   const receipt = webhookBody.payload.payment.entity.notes.receipt;
 
   if (!event || !paymentId || !orderId || !id || !receipt) {
-    console.error(
-      `Webhook Error: Missing event, orderId , id, paymentId, receipt`
-    );
-    return res.status(400);
+    console.error("Webhook Error: Missing event, orderId,id,paymentId,receipt");
+    return res.stauts(400);
   }
 
   if (event === "payment.captured") {
-    console.log("SuccessFull");
+    console.log("Successfull");
     await Product.findByIdAndUpdate(id, {
       paid: true,
     });
@@ -107,6 +97,7 @@ exports.webhook = async (req, res) => {
       paid: false,
     });
   }
+
   await Payment.create({
     productId: id,
     webhookEventId,

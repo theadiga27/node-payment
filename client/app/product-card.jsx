@@ -12,7 +12,7 @@ function loadScript(src) {
       resolve(true);
     };
     script.onerror = () => {
-      reject(new Error("Something is not right!"));
+      reject(new Error("Something is not right"));
     };
     document.body.appendChild(script);
   });
@@ -26,16 +26,16 @@ function ProductCard({ cards }) {
       const res = await loadScript(
         "https://checkout.razorpay.com/v1/checkout.js"
       );
-
       if (!res) {
-        window.alert("Razorpay SDK failed to load. Are you online?");
+        window.alert("Razorpay ask failed to load. Are you online?");
       }
 
-      const { data } = await axios.get(`http://localhost:5000/buy`);
+      const { data } = await axios.get("http://localhost:5000/buy");
 
-      if (!data || !data.id || data.status != "created") {
-        return window.alert("order is not created");
+      if (!data || !data.id) {
+        return window.alert("Order is not created");
       }
+
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_TEST_KEY_ID,
         amount: data.amount,
@@ -45,7 +45,7 @@ function ProductCard({ cards }) {
         image: card.image,
         order_id: data.id,
         handler: function (response) {
-          window.alert("Payment Sucessfull");
+          window.alert("Payment Successfull");
           router.refresh();
         },
         notes: {
@@ -53,16 +53,16 @@ function ProductCard({ cards }) {
           receipt: data.receipt,
         },
       };
-      const rzp1 = new window.Razorpay(options);
-      rzp1.open();
-      rzp1.on("payment.failed", function (response) {
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+      rzp.on("payment.failed", function (response) {
         window.alert("Payment Failed");
       });
     } catch (e) {
       console.error(e);
     }
   };
-
   return (
     <div className="grid grid-cols-2 gap-8">
       {cards.map((card) => (
