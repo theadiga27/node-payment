@@ -30,7 +30,7 @@ function ProductCard({ cards }) {
         window.alert("Razorpay ask failed to load. Are you online?");
       }
 
-      const { data } = await axios.get("http://localhost:5000/buy");
+      const { data } = await axios.get("${process.env.NEXT_PUBLIC_BACKEND_URL}/buy");
 
       if (!data || !data.id) {
         return window.alert("Order is not created");
